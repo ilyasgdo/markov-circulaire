@@ -1,0 +1,515 @@
+{% load static %}
+<style xmlns="http://www.w3.org/1999/html">
+  
+.zoom {
+  transition: transform .2s; /* Animation */
+}
+
+.zoom:hover {
+  transform: scale(1.01); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}
+
+.carousseldiv{
+  display: flex;
+  justify-content: center;
+}
+
+.divtypevariable{
+  display: flex;
+}
+
+.carousselbouton{
+  transition: transform .2s;
+  height: 100%;
+  display: block;
+  margin: auto;
+  background-color: #EAFDFC;
+  border: black 1px solid;
+  color: black;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  border-radius: 50%;
+}
+
+.carousselbouton:hover{
+  transform: scale(1.02);
+  background-color: #d3edec;
+  
+}
+
+.resume-texte{
+  margin-left: 5%;
+  margin-left: 5%;
+  font-size: 150%; 
+}
+
+.row_resume_tableau_discret{
+  padding-bottom: 5%;
+  padding-top: 5%;
+
+}
+
+.text_resume_tableau_discret{
+  margin-left: 50%;
+  margin-left: 50%;
+  font-size: 150%; 
+  color: whitesmoke;
+  padding: 20px;
+  text-align: center;
+}
+
+.table_resume_tableau_discret{
+  margin-right: auto;
+  margin-left: auto;
+  transition: transform .2s;
+  margin-bottom : 3%; 
+}
+
+.table_resume_tableau_discret:hover{
+  transform: scale(1.02);
+}
+
+.resume-titre{
+  margin-right : auto; margin-left: auto; margin-top: 3%; margin-bottom: -5px;
+}
+
+.head_tableau_global{
+  background-color: #EAFDFC;
+  
+  padding: 20px;
+}
+
+</style>
+<!DOCTYPE html>
+<html style="font-size: 16px;">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="Chaîne de Markov générée, Détails des variables">
+    <meta name="description" content="">
+    <meta name="page_type" content="np-template-header-footer-from-plugin">
+    <title>Résultat</title>
+    <link rel="stylesheet" href="{% static 'css/nicepage.css' %}" media="screen">
+    <link rel="stylesheet" href="{% static 'css/resultat.css' %}" media="screen">
+
+    <link rel="stylesheet" href="{% static 'css/lightbox.css' %}" media="screen">
+
+    <script class="u-script" type="text/javascript" src="{% static 'js/jquery.js' %}" defer=""></script>
+    <script class="u-script" type="text/javascript" src="{% static 'js/nicepage.js' %}" defer=""></script>
+
+    <link id="u-theme-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Open+Sans:300,300i,400,400i,500,500i,600,600i,700,700i,800,800i">
+    <link id="u-page-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+
+    <script type="application/ld+json">{
+		"@context": "http://schema.org",
+		"@type": "Organization",
+		"name": "",
+		"logo": "{% static 'images/logoLTI.png' %}"
+}</script>
+
+
+
+            <script>
+              document.addEventListener('DOMContentLoaded', function () {
+                  function updateIntervals(carouselIndexCirculaire) {
+                      var indexCarouselValue = carouselIndexCirculaire.toString();
+
+
+                      console.log(indexCarouselValue);
+
+
+                      var selectedValue = document.getElementById('pourcentage_' + indexCarouselValue).value;
+
+                      var selectedLoi = document.getElementById('select_loi_' + indexCarouselValue).value;
+                      var selectedUnite = document.getElementById('select_unit_' + indexCarouselValue).value;
+                      console.log("Selected value: " + selectedValue);
+                      console.log("Selected loi: " + selectedLoi);
+                      console.log("Selected unit: " + selectedUnite);
+
+                      // Requête AJAX pour envoyer a la fonction python les paramettre
+                      $.ajax({
+                          type: 'POST',
+                          url: 'views/recalculer-intervalle/',
+                          data: {
+                              'pourcentage': selectedValue,
+                              'loi': selectedLoi,
+                              'unite': selectedUnite,
+                              'csrfmiddlewaretoken': '{{ csrf_token }}'
+                          },
+                          success: function (response) {
+                              console.log("Response Data:", response);
+
+                              if (response.success) {
+                                  var intervals = response.intervals;
+                                  console.log("New Intervals:", intervals);
+
+                                  var titreIntervale = document.getElementById('titre_intervale');
+                                  var textesIntervalesList = document.getElementById('textes_intervales_' + indexCarouselValue);
+                                  titreIntervale.innerHTML = "Intervales Calculés avec un pourcentage de " + response.pourcentage;
+
+                                  textesIntervalesList.innerHTML = "";
+
+                                  for (var i = 0; i < intervals[indexCarouselValue].length; i++) {
+                                      var newIntervalValue = intervals[indexCarouselValue][i];
+
+                                      var listItem = document.createElement('li');
+
+                                      listItem.style.fontSize = '25px';
+                                      listItem.style.listStyle = 'none';
+                                      listItem.style.marginLeft = '20px';
+                                      listItem.style.marginBottom = '10px';
+
+                                      listItem.textContent = "Intervale " + (i + 1) + ": " + newIntervalValue;
+
+                                      textesIntervalesList.appendChild(listItem);
+                                  }
+
+
+                              } else {
+                                  console.log("Error: " + response.message);
+                              }
+                          },
+                          error: function (error) {
+                              console.log(error);
+                          }
+                      });
+                  }
+
+                  function initializeCarouselListeners(index) {
+                    document.getElementById('select_loi_' + index).addEventListener('change', function () {
+                        updateIntervals(index);
+                    });
+
+                    document.getElementById('select_unit_' + index).addEventListener('change', function () {
+                        updateIntervals(index);
+                    });
+
+                    document.getElementById('pourcentage_' + index).addEventListener('change', function () {
+                        updateIntervals(index);
+                    });
+                }
+
+                var length = parseInt(document.getElementById('compteurCirculaire').textContent);
+
+                for (var i = 0; i < length; i++) {
+                    updateIntervals(i);
+                    initializeCarouselListeners(i);
+                }
+                   console.log(length);
+              });
+
+
+
+          </script>
+
+
+
+
+
+    <meta name="theme-color" content="#478ac9">
+    <meta property="og:title" content="Configuration">
+    <meta property="og:type" content="website">
+  </head>
+  <body class="u-body u-xl-mode"><header class="u-border-1 u-border-no-left u-border-no-right u-border-no-top u-border-palette-4-light-2 u-clearfix u-header u-palette-4-light-3 u-header" id="sec-8608"><div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
+        <a href="#" class="u-image u-logo u-image-1" data-image-width="393" data-image-height="157">
+          <img src="{% static 'images/logoLTI.png' %}" class="u-logo-image u-logo-image-1">
+        </a>
+      {% include 'base/navbar.html' %}
+      </div></header>
+    <section class="u-clearfix u-section-1" id="sec-e296">
+
+
+
+      <a id="section-graphe"></a>
+      <!-- affichage markov -->
+      <div class="u-clearfix u-sheet u-sheet-1 ">
+          {% if markov %}
+              <h1 class="u-align-center u-custom-font u-font-raleway u-text u-text-default u-text-1 markov-title">Chaîne de Markov générée</h1>
+              <div class="u-border-2 u-border-grey-75 u-border-no-bottom u-border-no-left u-border-no-right u-container-style u-expanded-width u-group u-white u-group-1">
+                  <div class="u-container-layout u-container-layout-1"></div>
+              </div>
+              <br><br>
+
+              <div class="row divtypevariable">
+                  {% load static %}
+
+                  {% for file, loiStableInfo in files_and_loiStableInfo %}
+                      <div class="col-md-4 mb-3 file-container u-palette-4-light-3">
+                          <h1 class="file-name">Graphe : {{forloop.counter0}}</h1>
+                          <a href="{% static file.path %}" data-lightbox="image-set" data-title="{{ file.name }}">
+                              <img src="{% static file.path %}" alt="{{ file.name }}" class="img-thumbnail">
+                          </a>
+                          {% if loiStableInfo %}
+                              <p class="info stable-law">Loi Stable: {{ loiStableInfo.0|join:", " }}</p>
+                              <p class="info convergence-time">Temps de Convergence: {{ loiStableInfo.1 }}</p>
+                          {% else %}
+                              <p class="info no-law">Loi Stable non disponible</p>
+                          {% endif %}
+                      </div>
+                  {% endfor %}
+              </div>
+              <br><br>
+          {% endif %}
+      </div>
+      <script src="{% static 'js/lightbox.js' %}"></script>
+       <!-- affichage markov fin -->
+
+      <a id="section-plot-continu"></a>
+      {% if plots_continues|length > 0 %}
+        <div style="display: flex; justify-content: center; margin-bottom: 30px">
+          <h2>Variables continues</h2>
+        </div>
+        <div id="div_circulaire" class="divtypevariable">
+          <button id="continue_previous" class="carousselbouton"><</button>
+        {% for plot in plots_continues %}
+          <div id="div_continue_{{forloop.counter0}}" class="zoom" style="display: flex; justify-content: center; margin-bottom: 50px; width:60%; margin-left: auto; margin-right: auto; border: 1px solid black; flex-direction: column;">
+            <div style="flex-grow:6 ; display: flex; justify-content: center;  background-color: #EAFDFC; flex-direction : column;">
+              {% with i=forloop.counter0 %}
+                {% for nom in noms_continus %}
+                  {% if forloop.counter0 == i %}
+                    <h2 class="resume-titre">{{ nom }}</h2>
+                  {% endif %}
+                {% endfor %}
+              {% endwith %}
+            </div>
+            <div style="flex-grow: 1; display: flex; justify-content: center;">
+              <img src="{% static plot %}" style="max-width: 50%; height: auto; width: auto\9; margin-left: auto; margin-right: auto;">
+            </div>
+            <div style="flex-grow: 6; display: flex; justify-content: center; background-color: #EAFDFC; flex-direction: column;">
+              {% with i=forloop.counter0 %}
+              {% for resume in resumes_continus %}
+                {% if forloop.counter0 == i %}
+                  {% with y=forloop.counter0 %}
+                    {% for nom in noms_continus %}
+                      {% if forloop.counter0 == y %}
+                        <h2 class="resume-titre">Résumé {{ nom }}</h2>
+                      {% endif %}
+                    {% endfor %}
+                  {% endwith %}
+                  <table class="table_resume_tableau_discret">
+                    <tr class="row_resume_tableau_discret">
+                  {% for row in resume %}
+                    {% with y=forloop.counter0 %}
+                      {% for couleur in couleurs %}
+                        {% if forloop.counter0 == y %}
+                          <td class="text_resume_tableau_discret" style="background-color: {{ couleur }} ;">{{ row }}</td>
+                        {% endif %}
+                      {%endfor%}
+                    {% endwith %}
+                  {% endfor %}
+                    </tr>
+                  </table>
+                {% endif %}
+              {% endfor %}
+            {% endwith %}
+            </div>
+          </div>
+        {% endfor %}
+          <button id="continue_next" class="carousselbouton">></button>
+        </div>
+      {% endif %}
+
+
+      <a id="section-plot-circulaire"></a>
+
+      {% if plots_circulaires|length > 0 %}
+        <div style="display: flex; justify-content: center; margin-bottom: 30px">
+          <h2>Variables circulaires</h2>
+        </div>
+
+        <div id="div_circulaire" class="divtypevariable">
+          <button id="circular_previous" class="carousselbouton"><</button>
+
+          {% for nom in noms_circulaires %}
+            <div id="div_circulaire_{{ forloop.counter0 }}" class="zoom" style="display: flex; justify-content: flex-start; border: 1px solid black; margin-bottom: 50px; width:60%; margin-left: auto; margin-right: auto; flex-direction: column;">
+              <div style="flex-grow:6 ; display: flex; justify-content: center; background-color: #EAFDFC; flex-direction: column;">
+                <h2 class="resume-titre">{{ nom }}</h2>
+              </div>
+
+              <div style="flex-grow:6 ; display: flex; justify-content: center; background-color: #EAFDFC; flex-direction: row; padding-bottom: 20px;">
+                <div style="display: flex; flex-direction: column; width: 25%; justify-content: center;">
+                  <p style="margin: auto;">Loi : </p>
+                  <select name="select_loi_{{ forloop.counter0 }}" id="select_loi_{{ forloop.counter0 }}" class="selecteur_loi" style="width:60%; margin-left: auto; margin-right: auto; height: 45%;">
+                    <option value="vonmises">Von Mises</option>
+                    <option value="cauchy">Wrapped Cauchy</option>
+                  </select>
+                </div>
+
+                <div style="display: flex; flex-direction: column; width: 25%;">
+                  <p style="margin: auto;">Unité : </p>
+                  <select name="select_unit_{{ forloop.counter0 }}" class="selecteur_unite" id="select_unit_{{ forloop.counter0 }}" style="width:60%; margin-left: auto; margin-right: auto; height: 45%; ">
+                    <option value="angle">Angle</option>
+                    <option value="heure">Heure</option>
+                    <option value="jour">Jour</option>
+                    <option value="semaine">Semaine</option>
+                  </select>
+                </div>
+
+                <div style="display: flex; flex-direction: column; width: 25%;">
+                  <p style="margin: auto;">Pourcentage : </p>
+                  <select id="pourcentage_{{ forloop.counter0 }}" name="pourcentage">
+                    {% for value in values_for_select %}
+                      <option value="{{ value }}" {% if value == 80 %}selected{% endif %}>{{ value }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div style="display: flex; flex-direction: column; width: 25%;">
+                  <p style="margin: auto;">Max : </p>
+                  <form style="width:60%; margin-left: auto; margin-right: auto; height: 45%;" action="" method="post">
+                    {% csrf_token %}
+                    <div style="display: flex; flex-direction: row; margin-top: 10%;">
+                      <input type="number" name="maxCirculaire" id="maxCirculaire" value="{% if 'maxCirculaire' in params %}{{ params.maxCirculaire }}{% else %}1.6{% endif %}" min="0.5" max="40" step="0.1"/>
+                      <input type="submit" value="OK">
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <div style="flex-grow: 1; display: flex; justify-content: center; flex-direction: column;">
+                <img id="image_circulaire_{{ forloop.counter0 }}" src="" style="max-width: 50%; height: auto; width: auto\9; margin-left: auto; margin-right: auto;">
+                <div style="display: flex; flex-direction: column;"></div>
+              </div>
+
+              <p id="compteurCirculaire" style="display: none;">{{ resumes_circulaires|length }}</p>
+
+              <div style="flex-grow: 6; display: flex; justify-content: center; background-color: #EAFDFC; flex-direction: column;">
+                <h2 class="resume-texte" id="titre_intervale" style="font-size: 2.5em;">Intervales Calculés avec un pourcentage de {{ pourcentage }} :</h2>
+                <ul id="textes_intervales_{{ forloop.counter0 }}">
+                  {% if forloop.counter0 < textes_intervalles|length %}
+                    {% for intervalle_texte_list in textes_intervalles %}
+                      {% if forloop.counter0 == forloop.parentloop.counter0 %}
+                        {% for intervalle_texte in intervalle_texte_list %}
+                          <li>{{ intervalle_texte }}</li>
+                        {% endfor %}
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                </ul>
+
+                {% with i=forloop.counter0 %}
+                  {% for resume in resumes_circulaires %}
+                    {% if forloop.counter0 == i %}
+                      {% with y=forloop.counter0 %}
+                        {% for nom in noms_circulaires %}
+                          {% if forloop.counter0 == y %}
+                            <h2 class="resume-titre">Résumé {{ nom }}</h2>
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
+                      {% for nom, unite in resume.items %}
+                        <p id="resume_circulaire_{{ i }}_{{ forloop.counter0 }}" class="resume-texte">{{ nom }} : {{ unite }}</p>
+                      {% endfor %}
+                    {% endif %}
+                  {% endfor %}
+                {% endwith %}
+              </div>
+
+            </div>
+          {% endfor %}
+
+          <button id="circular_next" class="carousselbouton">></button>
+        </div>
+      {% endif %}
+
+
+
+      <a id="section-plot-discret"></a>
+      {% if plots_discrets|length > 0 %}
+      <div style="display: flex; justify-content: center; margin-bottom: 30px">
+        <h2>Variables discrètes</h2>
+      </div>
+      <div id="div_discrete" class="divtypevariable">
+        <button id="discrete_previous" class="carousselbouton"><</button>
+      {% for plot in plots_discrets %}
+        <div id="div_discrete_{forloop.counter0}" class="zoom" style="display: flex; justify-content: center; border: 1px solid black; margin-bottom: 50px; width:60%; margin-left: auto; margin-right: auto; flex-direction: column;">
+          <div style="flex-grow:6 ; display: flex; justify-content: center;  background-color: #EAFDFC; flex-direction : column;">
+            {% with i=forloop.counter0 %}
+              {% for nom in noms_discrets %}
+                {% if forloop.counter0 == i %}
+                  <h2 class="resume-titre">{{ nom }}</h2>
+                {% endif %}
+              {% endfor %}
+            {% endwith %}
+          </div>
+          <div style="flex-grow: 1; display: flex; justify-content: center">
+            <img src="{% static plot %}" style="max-width: 100%; height: auto; width: auto\9;">
+          </div>
+          <div style="flex-grow:6 ; display: flex; justify-content: center;  background-color: #EAFDFC; flex-direction : column;">
+            {% with i=forloop.counter0 %}
+              {% for resume in resumes_discrets %}
+                {% if forloop.counter0 == i %}
+                  {% with y=forloop.counter0 %}
+                    {% for nom in noms_discrets %}
+                      {% if forloop.counter0 == y %}
+                        <h2 class="resume-titre">Résumé {{ nom }}</h2>
+                      {% endif %}
+                    {% endfor %}
+                  {% endwith %}
+                  <table class="table_resume_tableau_discret">
+                  {% for row in resume %}
+                    {% with y=forloop.counter0 %}
+                      {% for couleur in couleurs %}
+                        {% if forloop.counter0 == y %}
+                          <tr class="row_resume_tableau_discret" style="background-color: {{ couleur }} ;">
+                            {% for element in row %}
+                              <td class="text_resume_tableau_discret">{{ element }}</td>
+                            {% endfor %}
+                          </tr>
+                        {% endif %}
+                      {%endfor%}
+                    {% endwith %}
+                  {% endfor %}
+                  </table>
+                {% endif %}
+              {% endfor %}
+            {% endwith %}
+          </div>
+        </div>
+      {% endfor %}
+        <button id="discrete_next" class="carousselbouton">></button>
+      </div>
+      {% endif %}
+
+
+
+
+      <div class="container">
+        <h1>Tableau avec valeurs d'appartenance à un modèle pour chaque série</h1>
+
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <tbody>
+                            {% for row in resultat_tau %}
+                                <tr>
+                                    {% for value in row %}
+                                        <td>{{ value }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    </section>
+
+
+
+    
+    {% include 'base/footer.html' %}
+
+  </body>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="{% static 'js/resultat.js' %}"></script>
+</html>
