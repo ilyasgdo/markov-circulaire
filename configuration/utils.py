@@ -258,6 +258,11 @@ def hexa_couleurs(couleurs):
     return nouvelles_couleurs
 
 
+"""
++++++++++++++++++++++++++++++++++++++++++++++++
+                 ZONE TABLEAU EN BAS LA 
++++++++++++++++++++++++++++++++++++++++++++++++
+"""
 
 def lire_fichier_csv(nom_fichier):
     matrice = []
@@ -279,12 +284,10 @@ def lire_fichier_csv(nom_fichier):
 def ranger_series_par_model(nom_fichier):
     matrice = lire_fichier_csv(nom_fichier)
 
-    # Vérifier si la matrice est vide
 
     # Trouver l'indice de la colonne avec la plus grande valeur pour chaque ligne
     indices_max = np.argmax(matrice, axis=1)
 
-    # Créer un dictionnaire pour stocker les séries sous leurs modèles
     series_par_model = {model: [] for model in set(indices_max)}
 
     # Remplir le dictionnaire en ajoutant chaque série à son modèle correspondant
@@ -294,8 +297,8 @@ def ranger_series_par_model(nom_fichier):
     return series_par_model
 
 FICHIER_TAU = os.path.join(settings.BASE_DIR, 'CsvTau', 'tau.csv')
-# Exemple d'utilisation
 
 
 
 
+#;)

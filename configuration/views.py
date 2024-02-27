@@ -103,7 +103,9 @@ def home(request: HttpRequest):
 
     FICHIER_TAU = os.path.join(settings.BASE_DIR, 'CsvTau', 'tau.csv')
     resultat_tau = lire_fichier_csv(FICHIER_TAU)
-
+    """
+    partie pour generer les tableau
+    """
     print("/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§//§/§/§/§/")
     print(resultat_tau)
     print("/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§//§/§/§/§/")
