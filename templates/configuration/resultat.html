@@ -478,7 +478,7 @@
 
 
 
-
+      <a id="Tableau-Tau"></a>
       <div class="container">
         <h1>Tableau avec valeurs d'appartenance à un modèle pour chaque série</h1>
 
@@ -487,8 +487,17 @@
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped">
                         <tbody>
+                             <tr>
+                               <td></td>
+                            {% for row in resultat_tau.0 %}
+                                <td>Model : {{ forloop.counter }}</td>
+                            {% endfor %}
+                            </tr>
+
+
                             {% for row in resultat_tau %}
                                 <tr>
+                                    <td class="series-label">Serie: {{ forloop.counter}}</td>
                                     {% for value in row %}
                                         <td>{{ value }}</td>
                                     {% endfor %}
@@ -500,6 +509,36 @@
             </div>
         </div>
     </div>
+
+
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>tableau appartenace des serie au modeles</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for serie, models in resultat_rangement_tau.items %}
+                                <tr>
+                                    <td class="series-label">Model : {{ serie|add:1 }}</td>
+
+                                    {% for model in models %}
+                                        <td>{{model}}</td>
+                                    {% endfor %}
+
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
 
 
     </section>

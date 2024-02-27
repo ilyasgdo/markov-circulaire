@@ -108,7 +108,22 @@ def home(request: HttpRequest):
     print(resultat_tau)
     print("/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§//§/§/§/§/")
 
-
+    resultat_rangement_tau = ranger_series_par_model(FICHIER_TAU)
+    print(" ")
+    print(" ")
+    print(" ")
+    print(" ")
+    print("/§/§/§/§/§/§/!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print(" ")
+    print(resultat_rangement_tau)
+    print(" ")
+    print("/§/§/§/§/§/§/!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print(" ")
+    print(" ")
+    print(" ")
+    print(" ")
+    #
+    #
     # Si l'utilisateur a introduit le fichier markov dans le dossier data
     if "markov.csv" in os.listdir("data"):
         # Chargement du graphe et récupération des couleurs
@@ -185,6 +200,7 @@ def home(request: HttpRequest):
         'loiStable': loiStableSauvegarde,
         'files_and_loiStableInfo': zip(files, loiStableSauvegarde),
         "resultat_tau": resultat_tau,
+        "resultat_rangement_tau":resultat_rangement_tau,
     }
 
     # On passe ici en paramètre la position des variables

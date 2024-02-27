@@ -275,7 +275,26 @@ def lire_fichier_csv(nom_fichier):
 
     return np.array(matrice)
 
-# Utilisation de la fonction avec le fichier FICHIER_TAU
+
+def ranger_series_par_model(nom_fichier):
+    matrice = lire_fichier_csv(nom_fichier)
+
+    # Vérifier si la matrice est vide
+
+    # Trouver l'indice de la colonne avec la plus grande valeur pour chaque ligne
+    indices_max = np.argmax(matrice, axis=1)
+
+    # Créer un dictionnaire pour stocker les séries sous leurs modèles
+    series_par_model = {model: [] for model in set(indices_max)}
+
+    # Remplir le dictionnaire en ajoutant chaque série à son modèle correspondant
+    for serie, model in enumerate(indices_max):
+        series_par_model[model].append(serie + 1)  # Ajouter 1 pour correspondre aux indices des séries
+
+    return series_par_model
+
+FICHIER_TAU = os.path.join(settings.BASE_DIR, 'CsvTau', 'tau.csv')
+# Exemple d'utilisation
 
 
 
