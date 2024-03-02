@@ -525,7 +525,17 @@
                                     <td class="series-label">Model : {{ serie|add:1 }}</td>
 
                                     {% for model in models %}
-                                        <td>{{model}}</td>
+                                        <td class="image-cell" data-lightbox="serie{{ serie }}" data-title="Modèle {{ model }}">
+                                            {% for file in filesEtat %}
+                                                {% if forloop.counter == model %}
+                                                    <a href="{% static file.path %}" data-lightbox="image-set" data-title="hello">
+                                                        {{ model }}
+                                                    </a>
+                                                {% endif %}
+                                            {% endfor %}
+
+                                        </td>
+
                                     {% endfor %}
 
 
@@ -537,6 +547,7 @@
             </div>
         </div>
       </div>
+
 
 
 

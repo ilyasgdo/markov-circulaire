@@ -7,6 +7,11 @@ from django.conf import settings
 import numpy as np
 from numpy.linalg import matrix_power
 import csv
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
 # Ajout du dossier bin aux variables d'environnemen
 
 os.environ["PATH"] += ";.."
@@ -298,6 +303,81 @@ def ranger_series_par_model(nom_fichier):
 
 FICHIER_TAU = os.path.join(settings.BASE_DIR, 'CsvTau', 'tau.csv')
 
+
+def trier_csv_par_timestamp(fichier_csv):
+    with open(fichier_csv, 'r', encoding='utf-8-sig') as file:
+        csv_reader = csv.reader(file)
+        header = next(csv_reader)  # Enregistrer l'en-tête
+
+        # Trier les lignes en fonction du timestamp
+        lignes_triees = sorted(csv_reader, key=lambda row: float(row[0]))
+
+    return [header] + lignes_triees
+
+
+def generer_graphiques_de_csv(fichier_csv):
+    lignes_triees = trier_csv_par_timestamp(fichier_csv)
+
+    # Initialiser des listes pour stocker les timestamps, les valeurs maximales et les couleurs
+    max_values = []
+    index_color = []
+    color_string = []
+    timestamps = []
+
+    couleurs = ['red', 'green', 'blue', 'purple', 'yellow']
+
+    for row in lignes_triees:
+        # Convertir les valeurs de la ligne en float
+        valeurs = [float(val) for val in row[1:]]
+
+        # Trouver l'index de la colonne avec la plus grande valeur
+        index_max = np.argmax(valeurs)
+        index_color.append(index_max)
+        timestamps.append(float(row[0]))
+
+        # Ajouter la plus grande valeur aux listes
+        max_values.append([row[index_max + 1]])  # Stocker la valeur comme une liste dans max_values
+
+    # Convertir max_values en un tableau numpy
+    max_values = np.array(max_values, dtype=float)
+
+    # Faire une liste de valeurs pour faire le temps
+    time = list(range(len(max_values)))
+
+    for color in index_color:
+        color_string.append(couleurs[color])
+
+    # Tracer le graphique
+    plt.scatter(timestamps, max_values, c=color_string, label='Valeurs en fonction du temps')
+
+    # Configurer le graphique
+    plt.title('Graphique en fonction du temps')
+    plt.xlabel('Temps')
+    plt.ylabel('Valeurs')
+    plt.legend()
+
+    plt.ylim(0, 2)
+    lower_quantile = np.percentile(timestamps, 1)
+    upper_quantile = np.percentile(timestamps, 99)
+
+    # Enregistrer le graphique dans le dossier spécifié
+    output_filename = os.path.join(output_folder, f"{os.path.splitext(os.path.basename(fichier_csv))[0]}.png")
+    plt.savefig(output_filename)
+
+    # Définir la plage de valeurs de l'axe des abscisses en fonction des quantiles
+    plt.xlim(lower_quantile, upper_quantile)
+
+    #plt.show()
+
+
+# Répertoire contenant les fichiers CSV
+
+
+# Dossier pour enregistrer les graphiques
+output_folder = "static/pngGraphiqueEtat"
+
+
+#
 
 
 

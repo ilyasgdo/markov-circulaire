@@ -13,8 +13,15 @@ from .utils import *
 from python_classes.intervales import CirculaireConverter
 from python_classes.convertisseur_radians import ConvertisseurRadians
 import math
+import re
 
 
+
+def extract_etas_number(file_name):
+    match = re.search(r'etas(\d+)', file_name)
+    if match:
+        return int(match.group(1))
+    return 0
 
 
 def get_resumes(request: HttpRequest, id_variable: str, unite: str):
@@ -98,32 +105,42 @@ def home(request: HttpRequest):
         params[nomChamp] = request.GET[nomChamp]
 
     directory_path = os.path.join(settings.BASE_DIR, 'static','graphe')
-
+    directoryEtat_path = os.path.join(settings.BASE_DIR, 'static', 'pngGraphiqueEtat')
     supprimer_images(directory_path)
+    supprimer_images(directoryEtat_path)
+
 
     FICHIER_TAU = os.path.join(settings.BASE_DIR, 'CsvTau', 'tau.csv')
     resultat_tau = lire_fichier_csv(FICHIER_TAU)
-    """
-    partie pour generer les tableau
-    """
-    print("/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§//§/§/§/§/")
-    print(resultat_tau)
-    print("/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§/§//§/§/§/§/")
 
     resultat_rangement_tau = ranger_series_par_model(FICHIER_TAU)
-    print(" ")
-    print(" ")
-    print(" ")
-    print(" ")
-    print("/§/§/§/§/§/§/!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    print(" ")
-    print(resultat_rangement_tau)
-    print(" ")
-    print("/§/§/§/§/§/§/!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    print(" ")
-    print(" ")
-    print(" ")
-    print(" ")
+
+    repertoire_csv = os.path.join(settings.BASE_DIR, 'csvgraphique')
+    # Dossier pour enregistrer les graphiques
+
+    # Obtenir la liste des fichiers dans le répertoire
+    fichiers_csv = [f for f in os.listdir(repertoire_csv) if f.endswith('.csv')]
+
+    # Boucle sur chaque fichier CSV
+    for fichier in fichiers_csv:
+        chemin_fichier = os.path.join(repertoire_csv, fichier)
+
+        # Générer le graphique pour chaque fichier
+        generer_graphiques_de_csv(chemin_fichier)
+
+
+    file_listEtat = [f for f in os.listdir(directoryEtat_path) if os.path.isfile(os.path.join(directoryEtat_path, f))]
+
+    # Créez une liste de dictionnaires avec le nom et le chemin de chaque fichier
+    filesEtat = [{'name': f, 'path': os.path.join('pngGraphiqueEtat', f)} for f in file_listEtat]
+
+    # Trier la liste en fonction du numéro "etas"
+    filesEtat_sorted = sorted(filesEtat, key=lambda x: extract_etas_number(x['name']))
+
+    # Afficher la liste triée
+    print(filesEtat_sorted)
+
+
     #
     #
     # Si l'utilisateur a introduit le fichier markov dans le dossier data
@@ -174,6 +191,8 @@ def home(request: HttpRequest):
 
 
 
+
+
     data = {
         "plots": plots,
         "plots_continues": noms_plots(len(plots.nom_variables["continue"]), "continue"),
@@ -202,7 +221,9 @@ def home(request: HttpRequest):
         'loiStable': loiStableSauvegarde,
         'files_and_loiStableInfo': zip(files, loiStableSauvegarde),
         "resultat_tau": resultat_tau,
-        "resultat_rangement_tau":resultat_rangement_tau,
+        "resultat_rangement_tau": resultat_rangement_tau,
+        "filesEtat": filesEtat_sorted,
+
     }
 
     # On passe ici en paramètre la position des variables
