@@ -148,7 +148,7 @@
                                   var intervals = response.intervals;
                                   console.log("New Intervals:", intervals);
 
-                                  var titreIntervale = document.getElementById('titre_intervale');
+                                  var titreIntervale = document.getElementById('titre_intervale_' + indexCarouselValue);
                                   var textesIntervalesList = document.getElementById('textes_intervales_' + indexCarouselValue);
                                   titreIntervale.innerHTML = "Intervales Calculés avec un pourcentage de " + response.pourcentage;
 
@@ -379,7 +379,7 @@
               <p id="compteurCirculaire" style="display: none;">{{ resumes_circulaires|length }}</p>
 
               <div style="flex-grow: 6; display: flex; justify-content: center; background-color: #EAFDFC; flex-direction: column;">
-                <h2 class="resume-texte" id="titre_intervale" style="font-size: 2.5em;">Intervales Calculés avec un pourcentage de {{ pourcentage }} :</h2>
+                <h2 class="resume-texte" id="titre_intervale_{{ forloop.counter0 }}" style="font-size: 2.5em;">Intervales Calculés avec un pourcentage de {{ pourcentage }} :</h2>
                 <ul id="textes_intervales_{{ forloop.counter0 }}">
                   {% if forloop.counter0 < textes_intervalles|length %}
                     {% for intervalle_texte_list in textes_intervalles %}
